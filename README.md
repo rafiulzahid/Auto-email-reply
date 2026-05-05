@@ -14,7 +14,7 @@ The workflow listens for incoming Gmail messages, classifies the email text, gen
 
 ## Workflow Preview
 
-![Workflow Preview](screenshot.png)
+![Workflow Preview](Screenshot.png)
 
 ## Tech Stack
 
