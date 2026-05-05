@@ -1,0 +1,253 @@
+{
+  "name": "auto email reply",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "b197c72c-4982-46d8-967d-f8322a7e1982",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9xtLaTs6MZMQTW1E",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.snippet }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "order",
+              "description": "Email contains a confirmed order, purchase request, or customer wants to buy a product."
+            },
+            {
+              "category": "inquiry",
+              "description": "Email asks for product information, price, availability, or general questions before buying."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "ad56863b-776a-4974-b577-41289debd5da",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        160
+      ],
+      "id": "bda1c2e6-c13b-4be3-bd19-cb90f5193a85",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1y1fNyzzuP4v88Qw",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are replying to a customer email. Read the message carefully and write a specific, polite reply that directly answers the customer’s request.\n\nDo not write a subject line.\nDo not use templates or placeholders.\nDo not add fake information.\nDo not say generic sentences unless they are needed.\nMention the customer’s exact request naturally.\nIf the customer asks for information that is not available, say that we will share the details soon or ask one clear follow-up question.\n\nCustomer email:\n{{ $('Gmail Trigger').item.json.snippet }}\n\nWrite only the email reply body."
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "5c8d8046-b13a-4364-a34d-8be87dc817a1",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1y1fNyzzuP4v88Qw",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        -64
+      ],
+      "id": "bdca6554-4368-43f9-98ce-b18312ff7165",
+      "name": "Reply to a message",
+      "webhookId": "9847b228-3641-47bc-b514-400b1dc59241",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9xtLaTs6MZMQTW1E",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are replying to a customer email. Read the message carefully and write a specific, polite reply that directly answers the customer’s request.\n\nDo not write a subject line.\nDo not use templates or placeholders.\nDo not add fake information.\nDo not say generic sentences unless they are needed.\nMention the customer’s exact request naturally.\nIf the customer asks for information that is not available, say that we will share the details soon or ask one clear follow-up question.\n\nCustomer email:\n{{ $('Gmail Trigger').item.json.snippet }}\n\nWrite only the email reply body."
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        32
+      ],
+      "id": "1d837060-1b24-4875-8ed9-6fbe2801a69d",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "1y1fNyzzuP4v88Qw",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fbc0df2c-a3ea-4fb9-91fb-135362929d54",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "673e31881a9e7dab4e544fc9af592e17295afc69e536f7d689745d15a11d0949"
+  },
+  "id": "TwVsClvG0b83vvqT",
+  "tags": []
+}
