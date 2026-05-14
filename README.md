@@ -1,4 +1,4 @@
-# Auto Email Reply Workflow
+# Intelligent Email Response Automation System
 
 This project is an automated email reply system built with n8n, Gmail, and OpenAI.
 
